@@ -1,56 +1,72 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <algorithm>
 using namespace std;
-typedef long long ll;
 #define rep(i, n) for(int i = 0; i < (int)(n); i++)
 const long long INF = numeric_limits<long long>::max();
 
-struct edge{ll to, cost;};
-typedef pair<ll,ll> P;
-struct graph{
-  ll V;
-  vector<vector<edge> > G;
-  vector<ll> d;
+// 辺（to：行き先 weight：重み）
+struct edge{
+  long long to;
+  long long weight;
+};
 
-  graph(ll n){
+typedef pair<long long, long long> P;
+
+// 重み付きグラフ
+struct graph{
+  long long V;
+  vector<vector<edge> > G;
+  vector<long long> d;
+
+
+  graph(long long n){
     init(n);
   }
 
-  void init(ll n){
+  // グラフを初期化（頂点 n）
+  void init(long long n){
     V = n;
     G.resize(V);
     d.resize(V);
-    rep(i,V){
-      d[i] = INF;
+    rep(i, V){
+      d.at(i) = INF;
     }
   }
 
-  void add_edge(ll s, ll t, ll cost){
+  // 重み付きの辺を追加
+  void add_edge(long long from, long long to, long long weight){
     edge e;
-    e.to = t, e.cost = cost;
-    G[s].push_back(e);
+    e.to = to;
+    e.weight = weight;
+    G[from].push_back(e);
   }
 
-  void dijkstra(ll s){
-    rep(i,V){
+  // 頂点 fromからのグラフ
+  void dijkstra(long long from){
+    rep(i, V){
       d[i] = INF;
     }
-    d[s] = 0;
-    priority_queue<P,vector<P>, greater<P> > que;
-    que.push(P(0,s));
+    d[from] = 0;
+    priority_queue<P, vector<P>, greater<P> > que;
+    que.push(P(0, from));
     while(!que.empty()){
-      P p = que.top(); que.pop();
-      ll v = p.second;
-      if(d[v]<p.first) continue;
+      P p = que.top();
+      que.pop();
+      long long v = p.second;
+      if(d.at(v) < p.first){
+        continue;
+      }
       for(auto e : G[v]){
-        if(d[e.to]>d[v]+e.cost){
-          d[e.to] = d[v]+e.cost;
-          que.push(P(d[e.to],e.to));
+        if(d.at(e.to) > d.at(v) + e.weight){
+          d.at(e.to) = d.at(v) + e.weight;
+          que.push(P(d.at(e.to), e.to));
         }
       }
     }
   }
+
 };
 
 int main(){
